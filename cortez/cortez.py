@@ -1,8 +1,13 @@
 import urllib
 import sys
 from colorama import Fore, Back, init
-from config import client, CLIENT_ID
+from config import client, CLIENT_ID, CLIENT_SECRET, get_option
 from our_parser import parser
+import requests
+import soundcloud
+import webbrowser
+import oauth
+import time
 
 def track_info_api_call(client, track_id):
 	track_info = client.get('/tracks/{0}'.format(track_id))
@@ -76,12 +81,55 @@ def download_a_playlist(url):
 def color_print(message, track_name):
 	print(message + Fore.GREEN + Back.BLACK + track_name, end="")
 
-if __name__ == '__main__':
-	init(autoreset=True)
-	args = parser.parse_args()
-	if args.download:
-		download_a_track(args.download)
-	elif args.playlist:
-		download_a_playlist(args.playlist)
-	else:
-		parser.print_help()
+def test_auth():
+	client = soundcloud.Client(
+		client_id=CLIENT_ID,
+		redirect_uri='http://127.0.0.1:5000/grab')
+
+	print(client.authorize_url())
+	webbrowser.open(client.authorize_url())
+	oauth.run()
+	# print(client.authorize_url())
+	# print('running')
+	# time.sleep(1)
+	# webbrowser.open(client.authorize_url())
+
+	# print(helper.shutdown_server())
+	# print(client.authorize_url())
+
+# def test_config():
+# 	d = {}
+# 	config = configparser.ConfigParser()
+# 	config.read('config.cfg')
+# 	option = config.options('cortez')
+# 	if config.get('cortez', 'colors'):
+# 		print('colorrr')
+# 	else:
+# 		print('no')
+	# print(config.sections())
+
+
+
+# client = soundcloud.Client(
+#     client_id=CLIENT_ID,
+#     client_secret=CLIENT_SECRET,
+#     username='leokhachatorians@gmail.com',
+#     password='leoisub3r'
+# 	)
+
+# 	print(client.get('/me').username)
+
+# test_config()
+
+print(get_option()['save_token'])
+print(get_option()['colors'])
+print(get_option()['save_folder'])
+# if __name__ == '__main__':
+# 	init(autoreset=True)
+# 	args = parser.parse_args()
+# 	if args.download:
+# 		download_a_track(args.download)
+# 	elif args.playlist:
+# 		download_a_playlist(args.playlist)
+# 	else:
+# 		parser.print_help()
