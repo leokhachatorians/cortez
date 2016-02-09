@@ -1,13 +1,11 @@
 import urllib
 import sys
 from colorama import Fore, Back, init
-from config import client, CLIENT_ID, CLIENT_SECRET, get_option
+from config import CLIENT_ID, get_option
 from our_parser import parser
 import requests
 import soundcloud
-import webbrowser
-import oauth
-import time
+from oauth import app, OAuthHelper
 
 def track_info_api_call(client, track_id):
 	track_info = client.get('/tracks/{0}'.format(track_id))
@@ -42,10 +40,10 @@ def direct_download_workflow(client, track):
 	color_print('Starting download of ', title)
 	save_track_to_disk(url, title)
 
-def get_play_list(client, url):
+def check_download_argument(client, url):
         try:
-                playlist = resolve_url(client, url)
-                return playlist
+                resolved = resolve_url(client, url)
+                return resolved
         except Exception as e:
                 print("Error: {}".format(e))
                 sys.exit(2)
@@ -55,6 +53,8 @@ def check_if_downloadable(track):
 		return True
 
 def download_a_track(urls):
+	client = soundcloud.Client(client_id=CLIENT_ID)
+	urls = check_download_argument(client, urls)
 	for url in urls:
 		try:
 			track_info = resolve_url(client, url)
@@ -68,27 +68,39 @@ def download_a_track(urls):
 			print('Caught an exception: {}'.format(e))
 
 def download_a_playlist(url):
-	playlist = get_play_list(client, url)
+	client = soundcloud.Client(client_id=CLIENT_ID)
+	playlist = check_download_argument(client, url)
 	for track in playlist.tracks:
 		track = track_info_api_call(client, track['id'])
 		stream_url = get_stream_url(client, track)
 		track_name = format_track_name(track.title)
 		color_print('Starting download of ',track_name)
 		save_track_to_disk(stream_url.location, track_name)
-		print("....saved")
+		color_print('Saved ', track_name)
 	print('Finished downloading entire playlist.')
 
-def color_print(message, track_name):
-	print(message + Fore.GREEN + Back.BLACK + track_name, end="")
+def color_print(message, data):
+	print(message + Fore.GREEN + Back.BLACK + data + '.')
 
 def test_auth():
-	client = soundcloud.Client(
-		client_id=CLIENT_ID,
-		redirect_uri='http://127.0.0.1:5000/grab')
+	check = OAuthHelper(CLIENT_ID, app)
+	if check.oauth_flow():
+		user = check.user
+		print('Succesfully authenticated.')
+		color_print('Welcome, ',user.get('/me').username)
+	else:
+		print('Authentication failed.')
+		sys.exit(2)
 
-	print(client.authorize_url())
-	webbrowser.open(client.authorize_url())
-	oauth.run()
+# def get_user_info():
+# 	with open('.access_token','r') as t:
+# 		token = t.read()
+# 	user = soundcloud.Client(access_token=token)
+# 	print(user.get('/me').username)
+# init(autoreset=True)
+# test_auth()
+# get_user_info()
+
 	# print(client.authorize_url())
 	# print('running')
 	# time.sleep(1)
@@ -119,17 +131,39 @@ def test_auth():
 
 # 	print(client.get('/me').username)
 
-# test_config()
+# test_auth()
 
-print(get_option()['save_token'])
-print(get_option()['colors'])
-print(get_option()['save_folder'])
-# if __name__ == '__main__':
-# 	init(autoreset=True)
-# 	args = parser.parse_args()
-# 	if args.download:
-# 		download_a_track(args.download)
-# 	elif args.playlist:
-# 		download_a_playlist(args.playlist)
-# 	else:
-# 		parser.print_help()
+# print(get_option()['save_token'])
+# print(get_option()['colors'])
+# print(get_option()['save_folder'])
+if __name__ == '__main__':
+	init(autoreset=True)
+	args = parser.parse_args()
+	try:
+		if args.urls:
+			print(args.urls)
+		else:
+			print('Need a track or playlist URL in order to download.')
+	except:
+		pass
+
+	try:
+		if args.login:
+			if args.direct:
+				print('Username n password plz')
+			print('logging in')
+	except:
+		pass
+
+	if len(sys.argv) == 1:
+		parser.print_help()
+	# if args.urls:
+	# 	print(args.urls)
+	# else:
+	# 	print('Need a track or playlist URL in order to download.')
+
+	# 	test_auth()
+	# elif args.direct_login:
+	# 	print('Coming soon')
+	# else:
+	# 	parser.print_help()
