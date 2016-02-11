@@ -52,11 +52,6 @@ class OAuthHelper(object):
 			self.token = self.read_token()
 
 		print('Checking access token...',end='')
-
-		# if self.check_token(self.token):
-		# 	return True
-		# else:
-		# 	return False
 		return self.check_token(self.token)
 
 	def write_token(self, token):
