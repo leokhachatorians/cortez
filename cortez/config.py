@@ -1,20 +1,27 @@
 import configparser
 
-CLIENT_ID = "a1a76b5205bb80d8f7ad182133028016"
-CLIENT_SECRET = '3e027a923d14d7e64bee792643dd23f2'
-
-def get_option():
+def get_option(category):
 	d = {}
 
 	config = configparser.ConfigParser()
 	config.read('config.cfg')
 
-	options = config.options('cortez')
+	options = config.options(category)
 
 	for option in options:
 		try:
-			d[option] = config.get('cortez',option)
+			d[option] = config.get(category,option)
 		except:
 			print('Exception on {}'.format(option))
 			d[option] = None
 	return d
+
+config = configparser.ConfigParser()
+config.read('config.cfg')
+
+
+CLIENT_ID = config.get('app_settings', 'client_id')
+CLIENT_SECRET = config.get('app_settings', 'client_secret')
+REDIRECT_URI = config.get('app_settings', 'redirect_uri')
+SAVE_PATH = config.get('general', 'where_to_save')
+SAVE_TOKEN = config.getboolean('oauth', 'save_token')

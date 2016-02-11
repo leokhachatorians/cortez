@@ -4,7 +4,7 @@ import sys
 
 class Parser(argparse.ArgumentParser):
     def error(self, error):
-            sys.stderr.write("\nError: {}\n".format(error))
+            print("\nError: {}".format(error))
             self.print_help()
             sys.exit(2)
 
@@ -20,7 +20,10 @@ parser = Parser(
 			  full control within your terminal.
 	'''))
 
-sub_parser = parser.add_subparsers(dest="subparser_name")
+### Downloading Parser ###
+sub_parser = parser.add_subparsers(
+	dest="choice")
+
 sub_download = sub_parser.add_parser(
 	'download', 
 	help='\
@@ -31,7 +34,9 @@ sub_download.add_argument(
 	'urls',
 	nargs="*")
 
-sub_login = sub_parser.add_parser('login',
+### Login Parser ###
+sub_login = sub_parser.add_parser(
+	'login',
 	help='Login into SoundCloud')
 
 sub_login.add_argument(
@@ -39,4 +44,13 @@ sub_login.add_argument(
 	action="store_true")
 
 sub_login.add_argument('-d','--direct',
+	action="store_true")
+
+### Config Parser ###
+sub_config = sub_parser.add_parser(
+	'config',
+	help="Manage and edit cortez to your liking")
+
+sub_config.add_argument(
+	'config',
 	action="store_true")
