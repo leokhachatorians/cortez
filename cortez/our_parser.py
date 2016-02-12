@@ -6,7 +6,7 @@ class Parser(argparse.ArgumentParser):
     def error(self, error):
             print("\nError: {}".format(error))
             self.print_help()
-            sys.exit(2)
+            sys.exit(1)
 
 parser = Parser(
 	prog='cortez',

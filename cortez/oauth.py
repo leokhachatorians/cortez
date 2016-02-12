@@ -6,12 +6,10 @@ import webbrowser
 import os
 import time
 import logging
-import sys
 
 class OAuthHelper(object):
-	def __init__(self, client_id, app):
-		self.client_id = client_id
-		self.app = app
+	def __init__(self, config):
+		self.config = config
 		self.user = None
 		self.token = None
 
@@ -23,8 +21,8 @@ class OAuthHelper(object):
 
 	def authenticate(self):
 		auth_url = soundcloud.Client(
-			client_id=self.client_id,
-			redirect_uri=config.REDIRECT_URI)
+			client_id=self.config.CLIENT_ID,
+			redirect_uri=self.config.REDIRECT_URI)
 		webbrowser.open(auth_url.authorize_url())
 		time.sleep(1.5)
 
@@ -43,7 +41,7 @@ class OAuthHelper(object):
 			self.authenticate()
 			self.token = input('Access Token: ')
 			if self.check_token(self.token):
-				if config.SAVE_TOKEN:
+				if self.config.SAVE_TOKEN:
 					self.write_token(self.token)
 			else:
 				print('Invalid Token')
@@ -64,8 +62,9 @@ class OAuthHelper(object):
 		return token
 
 ############################
-#  Local Server for OAuth  #
+#  Local Server for OAuth  # 
 ############################
+# CURRENTLY UNUSED FOR THE TIME BEING
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
