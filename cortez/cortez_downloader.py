@@ -1,6 +1,7 @@
 from oauth import OAuthHelper
 import urllib
 from colorama import Fore, Back
+import sys
 
 class CortezDownloader(object):
 	def __init__(self, client, config):
@@ -12,8 +13,12 @@ class CortezDownloader(object):
 		return track_info
 
 	def get_stream_url(self, track):
-		stream_url = self.client.get(track.stream_url, allow_redirects=False)
-		return stream_url
+		try:
+			stream_url = self.client.get(track.stream_url, allow_redirects=False)
+			return stream_url
+		except AttributeError:
+			print(Fore.RED + Back.WHITE + 'ERROR: That song is unable to be downloaded.')
+			sys.exit(1)
 
 	def save_track_to_disk(self, url, title):
 		urllib.request.urlretrieve(url, title+'.mp3')
@@ -53,15 +58,12 @@ class CortezDownloader(object):
 			return True
 
 	def download_a_track(self, track_id):
-		try:
-			track = self.track_info_api_call(track_id)
-			if track.downloadable:
-				self.direct_download_workflow(track)
-			else:
-				self.stream_download_workflow(track)
+		track = self.track_info_api_call(track_id)
+		if track.downloadable:
+			self.direct_download_workflow(track)
+		else:
+			self.stream_download_workflow(track)
 			print("....saved")
-		except Exception as e:
-			print('Caught an exception: {}'.format(e))
 
 	def download_a_playlist(self, playlist_info):
 		for track in playlist_info.tracks:
@@ -82,7 +84,7 @@ class CortezDownloader(object):
 			end='\n'
 		else:
 			end=''
-		print(message + Fore.GREEN + Back.BLACK + data, end=end)
+		print(message + Back.WHITE + Fore.BLUE + data, end=end)
 
 	def test_auth(self):
 		check = OAuthHelper(self.config)

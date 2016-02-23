@@ -1,6 +1,6 @@
 import sys
 from colorama import init
-from config import ConfigSetup
+from config import Config
 from our_parser import parser
 import soundcloud
 from cortez_downloader import CortezDownloader
@@ -8,7 +8,7 @@ from cortez_downloader import CortezDownloader
 if __name__ == '__main__':
 	init(autoreset=True)
 	args = parser.parse_args()
-	config = ConfigSetup()
+	config = Config()
 	client = soundcloud.Client(client_id=config.CLIENT_ID)
 	downloader = CortezDownloader(client, config)
 	if args.choice == 'download':
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 		else:
 			downloader.test_auth()
 	elif args.choice == 'config':
-		print('configure flow')
+		config.open_config()
 
 	if len(sys.argv) == 1:
 		parser.print_help()
