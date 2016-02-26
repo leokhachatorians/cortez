@@ -51,7 +51,8 @@ class Config(object):
 
 		self.palette = [
 		('I say', 'default,bold', 'default', 'bold'),
-		('Error', 'default, bold', 'dark red', 'black')]
+		('Error', 'default, bold', 'dark red', 'black'),
+		('reversed', 'standout', '')]
 
 		self.where_to_save = urwid.Edit(('I say', u'where_to_save='))
 		self.where_to_save.set_edit_text(self.SAVE_PATH)
@@ -87,8 +88,8 @@ class Config(object):
 				self.save_token,
 				self.div,
 				self.error_message,
-				self.save_button,
-				self.exit_button]
+				urwid.AttrMap(self.save_button, None, focus_map='reversed'),
+				urwid.AttrMap(self.exit_button, None, focus_map='reversed')]
 
 		self.top = urwid.ListBox(urwid.SimpleFocusListWalker((self.pile)))
 		self.main_widget = urwid.Padding(self.top, left=0, right=0)
@@ -116,15 +117,21 @@ class Config(object):
 			return True
 
 	def ask_to_save(self):
-		"""
-		Unused at the moment, still learning how to use urwid properly.
-		"""
 		save_changes = urwid.Text([u'Save Changes?'])
 		yes = urwid.Button(u'Yes')
 		no = urwid.Button(u'No')
 		urwid.connect_signal(yes, 'click', self.save_config)
-		urwid.connect_signal(no, 'click', self.exit_program)
-		self.main_widget.original_widget = urwid.Filler(urwid.Pile([save_changes, yes, no]))
+		urwid.connect_signal(no, 'click', self.go_back_to_config)
+		self.main_widget_holder = self.main_widget.original_widget
+		self.main_widget.original_widget = urwid.Overlay(
+			urwid.Filler(urwid.Pile(
+				[save_changes,
+				 urwid.AttrMap(yes, None, focus_map='reversed'),
+				 urwid.AttrMap(no, None, focus_map='reversed')])),
+			urwid.SolidFill(u'\N{MEDIUM SHADE}'),
+			align='center', width=('relative', 30),
+			valign='middle', height=('relative', 20),
+			min_width=20, min_height=9)
 
 	def save_config(self, button):
 		self.change('general', 'where_to_save', str(self.where_to_save.get_edit_text()))
@@ -134,6 +141,9 @@ class Config(object):
 		self.change('oauth', 'save_token', str(self.save_token.get_edit_text()))
 		self.write()
 		raise urwid.ExitMainLoop()
+
+	def go_back_to_config(self, button):
+		self.main_widget.original_widget = self.main_widget_holder
 
 	def check_save_token(self):
 		try:
