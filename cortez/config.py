@@ -117,12 +117,13 @@ class Config(object):
 			return True
 
 	def ask_to_save(self):
+		self.main_widget_holder = self.main_widget.original_widget
+		self.error_message.set_text(u'')
 		save_changes = urwid.Text([u'Save Changes?'])
 		yes = urwid.Button(u'Yes')
 		no = urwid.Button(u'No')
 		urwid.connect_signal(yes, 'click', self.save_config)
 		urwid.connect_signal(no, 'click', self.go_back_to_config)
-		self.main_widget_holder = self.main_widget.original_widget
 		self.main_widget.original_widget = urwid.Overlay(
 			urwid.Filler(urwid.Pile(
 				[save_changes,
