@@ -1,6 +1,7 @@
 import configparser
 import sys
 import urwid
+import os
 
 class Config(object):
 	def __init__(self):
@@ -13,6 +14,8 @@ class Config(object):
 		self.REDIRECT_URI = self.config.get('app_settings', 'redirect_uri')
 		self.SAVE_PATH = self.config.get('general', 'where_to_save')
 		self.SAVE_TOKEN = self.config.getboolean('oauth', 'save_token')
+
+		self.error_list = []
 
 # The text for where, client_stuff, and token_stuff NEED to be
 # formatted as such otherwise urwid does some funky stuff 
@@ -73,8 +76,7 @@ class Config(object):
 		self.exit_button = urwid.Button(u'Exit')
 		self.div = urwid.Divider()
 
-		self.pile = urwid.Pile(
-			[
+		self.pile = [
 				self.where,
 				self.where_to_save,
 				self.client_stuff,
@@ -86,29 +88,29 @@ class Config(object):
 				self.div,
 				self.error_message,
 				self.save_button,
-				self.exit_button
-			])
+				self.exit_button]
 
-		self.top = urwid.Filler(self.pile, valign='top')
+		self.top = urwid.ListBox(urwid.SimpleFocusListWalker((self.pile)))
+		self.main_widget = urwid.Padding(self.top, left=0, right=0)
 
 		urwid.connect_signal(self.exit_button, 'click', self.exit_program)
 		urwid.connect_signal(self.save_button, 'click', self.on_save_clicked)
 
 	def open_config(self):
-		urwid.MainLoop(self.top, self.palette).run()
+		urwid.MainLoop(self.main_widget, self.palette).run()
 
 	def exit_program(self, button):
 		raise urwid.ExitMainLoop()
 
 	def on_save_clicked(self, button):
 		if self.check_if_valid_config():
-			# self.ask_to_save()
-			self.save_config()
+			self.ask_to_save()
 		else:
 			self.error_message.set_text(('Error','<save_access_token> only takes [True] or [False]'))
 
 	def check_if_valid_config(self):
 		if self.save_token.get_edit_text().lower() not in ('true','false'):
+			self.error_list.append({'Error':'<save_access_token> only takes [True] or [False]'})
 			return False
 		else:
 			return True
@@ -122,11 +124,9 @@ class Config(object):
 		no = urwid.Button(u'No')
 		urwid.connect_signal(yes, 'click', self.save_config)
 		urwid.connect_signal(no, 'click', self.exit_program)
-		self.pile = urwid.Pile([save_changes, yes, no])
+		self.main_widget.original_widget = urwid.Filler(urwid.Pile([save_changes, yes, no]))
 
-		self.top = urwid.Filler(self.pile, valign='top')
-
-	def save_config(self):
+	def save_config(self, button):
 		self.change('general', 'where_to_save', str(self.where_to_save.get_edit_text()))
 		self.change('app_settings', 'client_id', str(self.client_id.get_edit_text()))
 		self.change('app_settings', 'client_secret', str(self.client_secret.get_edit_text()))
