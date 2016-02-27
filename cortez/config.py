@@ -1,7 +1,5 @@
 import configparser
-import sys
 import urwid
-import os
 import tkinter
 from tkinter.filedialog import askdirectory
 
