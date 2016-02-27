@@ -1,9 +1,6 @@
 # cortez
 
-cortez is a simple command line tool which allows you to seamlessly and quickly download your faviorite tracks and playlists off SoundCloud. 
-
-
-What cortez aims to be is a one-stop area being able to interact with SoundCloud without leaving the terminal and also an easy method of downloading your faviorite tracks quickly and effortlessly.
+cortez is a simple command line tool which allows you to seamlessly and quickly download your faviorite tracks and playlists off SoundCloud.
 
 **Note that cortez is still being actively developed with a plethora of features in the pipeline, create an issue for any bugs found or pull requests.**
 
