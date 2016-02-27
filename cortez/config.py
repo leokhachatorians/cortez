@@ -2,6 +2,8 @@ import configparser
 import sys
 import urwid
 import os
+import tkinter
+from tkinter.filedialog import askdirectory
 
 class Config(object):
 	def __init__(self):
@@ -54,9 +56,8 @@ class Config(object):
 		('Error', 'default, bold', 'dark red', 'black'),
 		('reversed', 'standout', '')]
 
-		self.where_to_save = urwid.Edit(('I say', u'where_to_save='))
-		self.where_to_save.set_edit_text(self.SAVE_PATH)
-		self.where_to_save.set_edit_pos(len(self.SAVE_PATH))
+		self.where_to_save = urwid.Text(('I say', u'where_to_save='))
+		self.save_path = urwid.Text(self.SAVE_PATH)
 
 		self.client_id = urwid.Edit(('I say', u'client_id='))
 		self.client_id.set_edit_text(self.CLIENT_ID)
@@ -73,17 +74,21 @@ class Config(object):
 		self.error_message = urwid.Text(u'')
 		self.div = urwid.Divider()
 
+		self.directory_selector = urwid.Button(u'Directory Path')
 		self.save_button = urwid.Button(u'Save')
 		self.exit_button = urwid.Button(u'Exit')
 		self.div = urwid.Divider()
 
 		self.pile = [
-				self.where,
-				self.where_to_save,
 				self.client_stuff,
 				self.client_id,
 				self.client_secret,
 				self.redirect_uri,
+				self.where,
+				urwid.Columns(
+					[('pack', self.where_to_save),
+					self.save_path]),
+				urwid.AttrMap(self.directory_selector, None, focus_map='reversed'),
 				self.token_stuff, 
 				self.save_token,
 				self.div,
@@ -96,12 +101,20 @@ class Config(object):
 
 		urwid.connect_signal(self.exit_button, 'click', self.exit_program)
 		urwid.connect_signal(self.save_button, 'click', self.on_save_clicked)
+		urwid.connect_signal(self.directory_selector, 'click', self.open_directory_browser)
 
 	def open_config(self):
 		urwid.MainLoop(self.main_widget, self.palette).run()
 
 	def exit_program(self, button):
 		raise urwid.ExitMainLoop()
+
+	def open_directory_browser(self, button):
+		root = tkinter.Tk()
+		root.withdraw()
+		f = askdirectory()
+		if f:
+			self.save_path.set_text(f)
 
 	def on_save_clicked(self, button):
 		if self.check_if_valid_config():
@@ -135,7 +148,7 @@ class Config(object):
 			min_width=20, min_height=9)
 
 	def save_config(self, button):
-		self.change('general', 'where_to_save', str(self.where_to_save.get_edit_text()))
+		self.change('general', 'where_to_save', str(self.save_path.get_text()[0]))
 		self.change('app_settings', 'client_id', str(self.client_id.get_edit_text()))
 		self.change('app_settings', 'client_secret', str(self.client_secret.get_edit_text()))
 		self.change('app_settings', 'redirect_uri', str(self.redirect_uri.get_edit_text()))
