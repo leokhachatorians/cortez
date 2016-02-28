@@ -13,18 +13,17 @@ cortez is a simple command line tool which allows you to seamlessly and quickly 
 #### Downloading
 ##### Single File download
      python cortez.py download https://soundcloud.com/travisscott-2/wonderful-ftthe-weeknd
-##### Multiple Files (space delimited)
+##### Multiple Files
     python cortez.py download https://soundcloud.com/travisscott-2/wonderful-ftthe-weeknd https://soundcloud.com/harlem_fetty/fetty-wap-jimmy-choo
 ##### Playlist
     python cortez.py download https://soundcloud.com/hongdotmy/sets/deepmixnation
-
-
+    
 #### Edit Configuration
-- python cortez.py config
+    python cortez.py config
 
 
 #### Authenticate
-- python cortez.py login
+    python cortez.py login
 
 # To Do
 * When items are downloaded, actually direct the files to the proper location as specified by the users config file
@@ -32,3 +31,4 @@ cortez is a simple command line tool which allows you to seamlessly and quickly 
 * Allow option to enable/disable colors
 * Settings for verbose or regular error messages
 * Tackle the behemoth that is terminal display of SoundCloud
+* Anything and everything else I can think of
