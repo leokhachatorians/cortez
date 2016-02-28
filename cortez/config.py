@@ -15,8 +15,6 @@ class Config(object):
 		self.SAVE_PATH = self.config.get('general', 'where_to_save')
 		self.SAVE_TOKEN = self.config.getboolean('oauth', 'save_token')
 
-		self.error_list = []
-
 # The text for where, client_stuff, and token_stuff NEED to be
 # formatted as such otherwise urwid does some funky stuff 
 		self.where = urwid.Text(u"""
@@ -117,13 +115,10 @@ class Config(object):
 	def on_save_clicked(self, button):
 		if self.check_if_valid_config():
 			self.ask_to_save()
-		else:
-			self.error_message.set_text(('Error','<save_access_token> only takes [True] or [False]'))
 
 	def check_if_valid_config(self):
 		if self.save_token.get_edit_text().lower() not in ('true','false'):
-			self.error_list.append({'Error':'<save_access_token> only takes [True] or [False]'})
-			return False
+			self.error_message.set_text(('Error','<save_access_token> only takes [True] or [False]'))
 		else:
 			return True
 
@@ -156,13 +151,6 @@ class Config(object):
 
 	def go_back_to_config(self, button):
 		self.main_widget.original_widget = self.main_widget_holder
-
-	def check_save_token(self):
-		try:
-			self.SAVE_TOKEN = self.config.getboolean('oauth', 'save_token')
-		except ValueError:
-			print('<SAVE_TOKEN> value was invalid, defaulting to True')
-			self.SAVE_TOKEN = True
 
 	def change(self, section, option, value):
 		self.config.set(section, option, value)
