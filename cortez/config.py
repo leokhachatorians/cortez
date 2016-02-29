@@ -108,9 +108,9 @@ class Config(object):
 	def open_directory_browser(self, button):
 		root = tkinter.Tk()
 		root.withdraw()
-		f = askdirectory()
-		if f:
-			self.save_path.set_text(f)
+		chosen_directory = askdirectory()
+		if chosen_directory:
+			self.save_path.set_text(chosen_directory)
 
 	def on_save_clicked(self, button):
 		if self.check_if_valid_config():
@@ -136,9 +136,9 @@ class Config(object):
 				 urwid.AttrMap(yes, None, focus_map='reversed'),
 				 urwid.AttrMap(no, None, focus_map='reversed')])),
 			urwid.SolidFill(u'\N{MEDIUM SHADE}'),
-			align='center', width=('relative', 30),
-			valign='middle', height=('relative', 20),
-			min_width=20, min_height=9)
+				align='center', width=('relative', 30),
+				valign='middle', height=('relative', 20),
+				min_width=20, min_height=9)
 
 	def save_config(self, button):
 		self.change('general', 'where_to_save', str(self.save_path.get_text()[0]))
