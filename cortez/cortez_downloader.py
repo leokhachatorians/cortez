@@ -21,7 +21,7 @@ class CortezDownloader(object):
 			sys.exit(1)
 
 	def save_track_to_disk(self, url, title):
-		urllib.request.urlretrieve(url, title+'.mp3')
+		urllib.request.urlretrieve(url, self.config.SAVE_PATH + title + '.mp3')
 
 	def format_track_name(self, track):
 		remove = '#/\\\'\"'
@@ -63,7 +63,7 @@ class CortezDownloader(object):
 			self.direct_download_workflow(track)
 		else:
 			self.stream_download_workflow(track)
-			print("....saved")
+		print("....saved")
 
 	def download_a_playlist(self, playlist_info):
 		for track in playlist_info.tracks:

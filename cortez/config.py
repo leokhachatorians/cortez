@@ -9,10 +9,16 @@ class Config(object):
 		self.config = configparser.ConfigParser()
 		self.config.read(self.path)
 
+		# Config General Settings
+		self.SAVE_PATH = self.config.get('general', 'where_to_save')
+		self.MAX_THREADS = self.config.getint('general', 'max_threads')
+
+		# Config App Settings
 		self.CLIENT_ID = self.config.get('app_settings', 'client_id')
 		self.CLIENT_SECRET = self.config.get('app_settings', 'client_secret')
 		self.REDIRECT_URI = self.config.get('app_settings', 'redirect_uri')
-		self.SAVE_PATH = self.config.get('general', 'where_to_save')
+		
+		# Config OAuth Settings
 		self.SAVE_TOKEN = self.config.getboolean('oauth', 'save_token')
 
 # The text for where, client_stuff, and token_stuff NEED to be
@@ -108,9 +114,9 @@ class Config(object):
 	def open_directory_browser(self, button):
 		root = tkinter.Tk()
 		root.withdraw()
-		chosen_directory = askdirectory()
+		chosen_directory = askdirectory(initialdir=self.SAVE_PATH)
 		if chosen_directory:
-			self.save_path.set_text(chosen_directory)
+			self.save_path.set_text(chosen_directory + '/')
 
 	def on_save_clicked(self, button):
 		if self.check_if_valid_config():
