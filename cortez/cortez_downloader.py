@@ -8,6 +8,13 @@ class CortezDownloader(object):
 		self.client = client
 		self.config = config
 
+	def download(self, url):
+		check = self.check_if_track_or_playlist(url)
+		if check[0] == 'playlist':
+			self.download_a_playlist(check[1])
+		elif check[0] == 'track':
+			self.download_a_track(check[1].id)
+
 	def track_info_api_call(self, track_id):
 		track_info = self.client.get('/tracks/{0}'.format(track_id))
 		return track_info
@@ -33,16 +40,12 @@ class CortezDownloader(object):
 		info = self.client.get('/resolve', url=url)
 		return info
 
-	def stream_download_workflow(self, track):
+	def stream_download_workflow(self, track, title):
 		stream_url = self.get_stream_url(track)
-		title = self.format_track_name(track)
-		self.color_print('Starting download of ', title)
 		self.save_track_to_disk(stream_url.location, title)
 
-	def direct_download_workflow(self, track):
+	def direct_download_workflow(self, track, title):
 		url = track.download_url + '?client_id=' + self.config.CLIENT_ID
-		title = self.format_track_name(track)
-		self.color_print('Starting download of ', title)
 		self.save_track_to_disk(url, title)
 
 	def check_download_argument(self, url):
@@ -59,11 +62,13 @@ class CortezDownloader(object):
 
 	def download_a_track(self, track_id):
 		track = self.track_info_api_call(track_id)
+		title = self.format_track_name(track)
+		self.color_print('Downloading ',title)
 		if track.downloadable:
-			self.direct_download_workflow(track)
+			self.direct_download_workflow(track, title)
 		else:
-			self.stream_download_workflow(track)
-		print("....saved")
+			self.stream_download_workflow(track, title)
+		self.color_print('Finished downloading ', title)
 
 	def download_a_playlist(self, playlist_info):
 		for track in playlist_info.tracks:
@@ -79,19 +84,15 @@ class CortezDownloader(object):
 			print(e)
 			return ['track', info]
 
-	def color_print(self, message, data,end=False):
-		if end:
-			end='\n'
-		else:
-			end=''
-		print(message + Back.WHITE + Fore.BLUE + data, end=end)
+	def color_print(self, message, data):
+		print(message + Back.BLUE + Fore.WHITE + data)
 
 	def test_auth(self):
 		check = OAuthHelper(self.config)
 		if check.oauth_flow():
 			user = check.user
 			print('Succesfully authenticated.')
-			self.color_print('Welcome, ',user.get('/me').username, end=True)
+			self.color_print('Welcome, ',user.get('/me').username)
 			return user
 		else:
 			print('Authentication failed.')
