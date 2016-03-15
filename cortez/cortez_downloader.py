@@ -53,7 +53,7 @@ class CortezDownloader(object):
 	        resolved = self.resolve_url(url)
 	        return resolved
 	    except:
-	        print("Error: URL given seems to be invalid")
+	        print("Error: Seems to be an issue fetching that track; may be private.")
 	        sys.exit(1)
 
 	def check_if_downloadable(self, track):
@@ -80,8 +80,7 @@ class CortezDownloader(object):
 		try:
 			if info.track_count:
 				return ['playlist', info]
-		except Exception as e:
-			print(e)
+		except:
 			return ['track', info]
 
 	def color_print(self, message, data):
