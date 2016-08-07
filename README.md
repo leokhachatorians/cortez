@@ -13,9 +13,9 @@ cortez is a simple command line tool which allows you to seamlessly and quickly 
 # Usage
 #### Downloading
 ##### Single File download
-     python cortez.py download https://soundcloud.com/travisscott-2/wonderful-ftthe-weeknd
+    python cortez.py download https://soundcloud.com/tsyn/tsyn-deep-house-mix-3
 ##### Multiple Files
-    python cortez.py download https://soundcloud.com/travisscott-2/wonderful-ftthe-weeknd https://soundcloud.com/harlem_fetty/fetty-wap-jimmy-choo
+    python cortez.py download https://soundcloud.com/tsyn/tsyn-deep-house-mix-3 https://soundcloud.com/harlem_fetty/fetty-wap-jimmy-choo
 ##### Playlist
     python cortez.py download https://soundcloud.com/hongdotmy/sets/deepmixnation
     
