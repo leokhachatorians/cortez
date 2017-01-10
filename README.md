@@ -2,7 +2,7 @@
 
 cortez is a simple command line tool which allows you to seamlessly and quickly download your faviorite tracks and playlists off SoundCloud.
 
-**Note that cortez is still being actively developed with a plethora of features in the pipeline, create an issue for any bugs found or pull requests.**
+**Note make sure you adjust your save directory in your config to properly save your tracks**
 
 # Install
   - Get Python3
